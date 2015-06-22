@@ -101,7 +101,6 @@ public class SqlHandler {
 			}
 		}
 		return valid;
-		
 	}
 	
 	public boolean newUser(String Email, String Password, String Username){

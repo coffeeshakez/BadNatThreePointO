@@ -46,6 +46,7 @@ public class MainController implements Initializable {
 	@FXML private ScrollPane textArea;
 	private GridPane grid;
 	@FXML ListView<User> friendList;
+	@FXML GridPane chatArea;
 	private Label chatName;
 
 	private Client client;
@@ -54,23 +55,25 @@ public class MainController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 		// TODO Auto-generated method stub
 
-
-
 		grid = new GridPane();
-		textArea.setContent(grid);
-
+		
 		ColumnConstraints c1 = new ColumnConstraints();
 		c1.setPercentWidth(100);
 
 		grid.getColumnConstraints().add(c1);
-		grid.setStyle("-fx-background-color: white");
+		grid.setStyle("-fx-background-color: black");
+		
+		textArea.setContent(grid);
 
 		textArea.setFitToHeight(true);
 		textArea.setFitToWidth(true);
+		
 		this.chatName = new Label("Welcome");
+		chatName.getStyleClass().add("chatInfo");
+		chatArea.add(chatName, 0, 0);
 		
 
-		textArea.setVbarPolicy(ScrollBarPolicy.ALWAYS);
+		textArea.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
 		
 
 		//Add listener to scrollable area so that the scrollbar can navigate to bottom.
@@ -89,6 +92,7 @@ public class MainController implements Initializable {
 				
 				
 				loadMessagesIntoTextArea(newValue);
+				chatName.setText(newValue.getUsername());
 				
 				System.out.println("ListView selection changed from oldValue = " 
 						+ oldValue + " to newValue = " + newValue);
@@ -114,8 +118,6 @@ public class MainController implements Initializable {
 				return cell;
 			}
 		});
-		
-		
 	}
 
 
@@ -131,7 +133,6 @@ public class MainController implements Initializable {
 		inputTextField.clear();
 	}
 
-
 	public void loadMessagesIntoTextArea(User u){
 		
 		this.grid.getChildren().clear();
@@ -146,31 +147,9 @@ public class MainController implements Initializable {
 
 	public void displayMessage(Message m){
 
-		VBox vbox = new VBox();
-
 		Image image = new Image(getClass().getResourceAsStream("twitter_icon.jpg"));
-
-		Label message = new Label(m.getMessage());
-		message.getStyleClass().add("chat-bubble");
-		message.setWrapText(true);
-
-		Label username = new Label("David Bakke    Sendt @ 23:42:10");
-		username.getStyleClass().add("username");
-
-		ImageView iv2 = new ImageView(image);
-
-		iv2.setFitWidth(20);
-		iv2.setPreserveRatio(true);
-		iv2.setSmooth(true);
-		iv2.setCache(true);
-
-		message.setGraphic(iv2);
-
-		message.setMinWidth(textArea.getWidth() - 30);
-		message.setMaxWidth(textArea.getWidth() - 30);
-
-		vbox.getChildren().add(username);
-		vbox.getChildren().add(message);
+		
+		VBox vbox = MessageBubble.createBubble(m.getMessage(), m.getSender(), this.textArea, image);
 
 		grid.setHalignment(vbox, HPos.RIGHT);
 		grid.addRow(grid.getChildren().size(), vbox);
