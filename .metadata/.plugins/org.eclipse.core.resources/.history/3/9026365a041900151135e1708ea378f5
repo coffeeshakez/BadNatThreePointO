@@ -67,8 +67,6 @@ public class MainController implements Initializable {
 
 		textArea.setFitToHeight(true);
 		textArea.setFitToWidth(true);
-		this.chatName = new Label("Welcome");
-		
 
 		textArea.setVbarPolicy(ScrollBarPolicy.ALWAYS);
 		
@@ -114,8 +112,6 @@ public class MainController implements Initializable {
 				return cell;
 			}
 		});
-		
-		
 	}
 
 
