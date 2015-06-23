@@ -15,14 +15,14 @@ public class Message implements Serializable {
 	private String type;
 	private ArrayList<User> friends;
 	
-	public static final String GET_USER = "GET_USER";
-	public static final String LOGIN = "LOGIN";
-	public static final String INITIAL_DATA = "INITIAL_DATA";
-	public static final String NEW_USER = "NEW_USER";
-	public static final String ADD_FRIEND = "ADD_FRIEND";
-	public static final String PRIV_MESSAGE = "PRIV_MESSAGE";
-	public static final String GROUP_MESSAGE = "GROUP_MESSAGE";
-	public static final String NEW_GROUP = "NEW_GROUP";
+	public final String GET_USER = "GET_USER";
+	public final String LOGIN = "LOGIN";
+	public final String INITIAL_DATA = "INITIAL_DATA";
+	public final String NEW_USER = "NEW_USER";
+	public final String ADD_FRIEND = "ADD_FRIEND";
+	public final String PRIV_MESSAGE = "PRIV_MESSAGE";
+	public final String GROUP_MESSAGE = "GROUP_MESSAGE";
+	public final String NEW_GROUP = "NEW_GROUP";
 	
 	public Message(String EmailReceiver, String message, String type){
 		this.message = message;

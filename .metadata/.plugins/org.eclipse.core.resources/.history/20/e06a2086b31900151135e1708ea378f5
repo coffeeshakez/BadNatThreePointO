@@ -287,16 +287,11 @@ public class SqlHandler {
 			e.printStackTrace();
 		}
 		
-		finally{
-			closeConnection();
-		}
-		
 		return user;
 	}
 	
-	public boolean createGroup(String groupName, ArrayList<User> users){
+	public boolean createGroup(){
 		
-		connec
 		
 		
 		return false;

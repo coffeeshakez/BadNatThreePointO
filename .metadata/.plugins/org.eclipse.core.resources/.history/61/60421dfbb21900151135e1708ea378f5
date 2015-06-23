@@ -96,7 +96,7 @@ public class ClientHandler extends Thread{
 			break;
 		}
 		
-		case Message.NEW_USER:{
+		case "NEW_USER":{
 			
 			String[] splitted = m.getMessage().split("-");
 			sql.newUser(splitted[0], splitted[1], splitted[2]);
@@ -114,7 +114,6 @@ public class ClientHandler extends Thread{
 		}
 		
 		case Message.NEW_GROUP:
-			
 
 		default:
 			Message error = new Message("SERVER" ,this.getEmail(), "ERROR", "Bad request");
