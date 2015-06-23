@@ -20,6 +20,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -42,14 +43,17 @@ import javafx.util.Callback;
 public class MainController implements Initializable {
 
 	@FXML private TextField inputTextField;
-	//	@FXML private TextArea textArea;
 	@FXML private ScrollPane textArea;
+	@FXML private ListView<User> friendList;
+	@FXML private GridPane chatArea;
+	@FXML private GridPane chatInfo;
+	@FXML private Button findFriends;
+	@FXML private Button newGroupChat;
+	
 	private GridPane grid;
-	@FXML ListView<User> friendList;
-	@FXML GridPane chatArea;
 	private Label chatName;
-
 	private Client client;
+	
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -70,8 +74,8 @@ public class MainController implements Initializable {
 		
 		this.chatName = new Label("Welcome");
 		chatName.getStyleClass().add("chatInfo");
-		chatArea.add(chatName, 0, 0);
 		
+		chatArea.add(chatName, 0, 0);
 
 		textArea.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
 		
@@ -92,10 +96,7 @@ public class MainController implements Initializable {
 				
 				
 				loadMessagesIntoTextArea(newValue);
-				chatName.setText(newValue.getUsername());
 				
-				System.out.println("ListView selection changed from oldValue = " 
-						+ oldValue + " to newValue = " + newValue);
 			}
 		});
 		
@@ -118,6 +119,8 @@ public class MainController implements Initializable {
 				return cell;
 			}
 		});
+		
+		
 	}
 
 
@@ -161,6 +164,14 @@ public class MainController implements Initializable {
 		//		//web.getEngine().load("http://www.youtube.com/embed/utUPth77L_o?autoplay=1");
 		//		web.setPrefSize(300, 250);
 		//		grid.addRow(grid.getChildren().size(), web);
+	}
+	
+	public void handleNewGroupChat(){
+		
+	}
+	
+	public void handleFindFriends(){
+		
 	}
 
 	public void setClient(Client client){

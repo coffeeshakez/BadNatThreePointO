@@ -15,6 +15,15 @@ public class Message implements Serializable {
 	private String type;
 	private ArrayList<User> friends;
 	
+	public final String GET_USER = "GET_USER";
+	public final String LOGIN = "LOGIN";
+	public final String INITIAL_DATA = "INITIAL_DATA";
+	public final String NEW_USER = "NEW_USER";
+	public final String ADD_FRIEND = "ADD_FRIEND";
+	public final String PRIV_MESSAGE = "PRIV_MESSAGE";
+	public final String GROUP_MESSAGE = "GROUP_MESSAGE";
+	public final String NEW_GROUP = "NEW_GROUP";
+	
 	public Message(String EmailReceiver, String message, String type){
 		this.message = message;
 		this.EmailReceiver = EmailReceiver;
@@ -25,7 +34,6 @@ public class Message implements Serializable {
 		this(EmailReceiver, message, type);
 		this.EmailSender = EmailSender;
 	}
-	
 	
 	public String getMessage(){
 		return message;

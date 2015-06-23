@@ -50,5 +50,4 @@ public class User implements Serializable{
 	public ArrayList<Message> getMessages(){
 		return this.messages;
 	}
-
 }

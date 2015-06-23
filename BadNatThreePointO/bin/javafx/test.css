@@ -16,10 +16,12 @@
 }
 
 .chatInfo{
-	-fx-background-color: #99CCFF;
-	-fx-background-radius: 50;
-	-fx-padding: 30;
-	-fx-margin: 30;
+	-fx-background-color: black;
+	-fx-border-color: white;
+	-fx-padding: 50;
+	-fx-margin: 50;
+	-fx-text-fill:white;
+	-fx-backgroud-radius:50px;
 }
 
 
@@ -48,7 +50,7 @@
 .button{
 	-fx-background-color:black;
 	-fx-border-color: white;
-	-fx-border-radius: 10px;
+	-fx-border-radius: 20px;
 	-fx-text-fill:#E6E6E6;
 }
 
