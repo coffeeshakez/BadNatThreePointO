@@ -1,0 +1,254 @@
+package javafx;
+
+
+
+
+import java.net.URL;
+import java.util.ResourceBundle;
+
+import model.Group;
+import model.Message;
+import model.User;
+import net.Client;
+import net.Server;
+import net.ServerListener;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.geometry.HPos;
+import javafx.geometry.Insets;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.ScrollPane.ScrollBarPolicy;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.control.cell.ComboBoxListCell;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.SVGPath;
+import javafx.scene.web.WebView;
+import javafx.util.Callback;
+
+public class MainController implements Initializable {
+
+	@FXML private TextField inputTextField;
+	@FXML private ScrollPane textArea;
+	@FXML private ListView<User> friendList;
+	@FXML private GridPane chatArea;
+	@FXML private GridPane chatInfo;
+	@FXML private Button findFriends;
+	@FXML private Button newGroupChat;
+	@FXML private ListView<Group> groupView;
+
+	private GridPane grid;
+	private Label chatName;
+	private Client client;
+
+
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+		// TODO Auto-generated method stub
+
+		grid = new GridPane();
+
+		ColumnConstraints c1 = new ColumnConstraints();
+		c1.setPercentWidth(100);
+
+		grid.getColumnConstraints().add(c1);
+		grid.setStyle("-fx-background-color: black");
+
+		textArea.setContent(grid);
+
+		textArea.setFitToHeight(true);
+		textArea.setFitToWidth(true);
+
+		this.chatName = new Label("Welcome");
+		chatName.getStyleClass().add("chatInfo");
+
+		chatArea.add(chatName, 0, 0);
+
+		textArea.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
+
+
+		//Add listener to scrollable area so that the scrollbar can navigate to bottom.
+		grid.heightProperty().addListener(new ChangeListener() {
+
+			@Override
+			public void changed(ObservableValue observable, Object oldvalue, Object newValue) {
+
+				textArea.setVvalue((Double)newValue );  
+			}
+		});
+
+		friendList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<User>() {
+			@Override
+			public void changed(ObservableValue<? extends User> observable, User oldValue, User newValue) {
+
+				groupView.getSelectionModel().clearSelection();
+				loadMessagesIntoTextArea(newValue);
+				
+			}
+		});
+
+		friendList.setCellFactory(new Callback<ListView<User>, ListCell<User>>(){
+
+			@Override
+			public ListCell<User> call(ListView<User> p) {
+
+				ListCell<User> cell = new ListCell<User>(){
+
+					@Override
+					protected void updateItem(User t, boolean bln) {
+						super.updateItem(t, bln);
+						if (t != null) {
+							setText(t.getUsername());
+						}
+					}
+				};
+
+				return cell;
+			}
+		});
+
+		groupView.setCellFactory(new Callback<ListView<Group>, ListCell<Group>>(){
+
+			@Override
+			public ListCell<Group> call(ListView<Group> p) {
+
+				ListCell<Group> cell = new ListCell<Group>(){
+					@Override
+					protected void updateItem(Group g, boolean bln){
+						super.updateItem(g, bln);
+						if(g != null){
+							setText(g.getGroupName());
+						}
+					}
+				};
+
+				return cell;
+			}
+		});
+
+		groupView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Group>() {
+
+			@Override
+			public void changed(ObservableValue<? extends Group> observable, Group oldValue, Group newValue) {
+
+				
+				friendList.getSelectionModel().clearSelection();
+				loadMessagesIntoTextArea(newValue);
+				
+				
+			}
+		});
+
+
+	}
+
+	public void handleEnterPressed(ActionEvent action){
+		
+		String message = inputTextField.textProperty().getValue();
+		inputTextField.clear();
+		
+		
+		if(! friendList.getSelectionModel().isEmpty()){
+			String Email = friendList.getSelectionModel().getSelectedItem().getEmail();
+			
+			if(friendList.getSelectionModel().getSelectedItem() != null){
+				client.sendMessageToUser(Email, message);
+			}
+		}
+		
+		if(! groupView.getSelectionModel().isEmpty()){
+			
+			
+			
+			
+		}
+		
+		
+		
+
+		
+
+		
+	}
+
+	public void loadMessagesIntoTextArea(Object o){
+		
+		this.grid.getChildren().clear();
+		
+		if(o instanceof User){
+
+			if( ((User) o).getMessages() != null ){
+				for(Message m : ((User) o).getMessages()){
+					System.out.println(m.getMessage());
+					displayMessage(m);
+				}
+			}
+		}
+		
+		if(o instanceof Group){
+			
+			if(((Group) o).getMessages() != null){
+				for(Message m : ((Group) o).getMessages()){
+					displayMessage(m);
+				}
+			}
+		}
+	}
+
+	public void displayMessage(Message m){
+
+		Image image = new Image(getClass().getResourceAsStream("twitter_icon.jpg"));
+
+		VBox vbox = MessageBubble.createBubble(m.getMessage(), m.getSender(), this.textArea, image);
+
+		grid.setHalignment(vbox, HPos.LEFT);
+		grid.addRow(grid.getChildren().size(), vbox);
+		grid.setMargin(vbox, new Insets(0,0,20,0));
+
+
+		//		WebView web = new WebView();
+		//		web.getEngine().load("https://www.youtube.com/embed/LQYNs4wqlO8");
+		//		//web.getEngine().load("http://www.youtube.com/embed/utUPth77L_o?autoplay=1");
+		//		web.setPrefSize(300, 250);
+		//		grid.addRow(grid.getChildren().size(), web);
+	}
+
+	public void handleNewGroupChat(){
+
+	}
+
+	public void handleFindFriends(){
+
+	}
+
+	public void setClient(Client client){
+		this.client = client;
+		client.setMainController(this);
+	}
+	public void setFriendList(ObservableList<User> friends){
+		this.friendList.setItems(friends);
+	}
+
+	public void setGroupChat(ObservableList<Group> groupChats){
+		this.groupView.setItems(groupChats);
+	}
+
+	public User getActiveFriendListItem(){
+		return this.friendList.getSelectionModel().getSelectedItem();
+	}
+}

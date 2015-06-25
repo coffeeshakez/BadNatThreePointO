@@ -5,7 +5,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import model.Group;
 import model.Message;
+import model.User;
 
 public class Server {
 	
@@ -72,6 +74,25 @@ public class Server {
 				}
 			}
 		}
+		return false;
+	}
+	
+	public boolean broadcastMessageToGroup(Message m){
+		
+		if(m != null){
+			
+			for(User u : m.getGroup().getUsers()){
+				Message msg = new Message(m.getSender(), u.getEmail(), m.getMessage(), Message.GROUP_MESSAGE);
+				msg.setGroup(m.getGroup());
+				
+				if(! broadcastMessageToUser(msg)){
+					return false;
+				}
+			}
+			
+			return true;
+		}
+		
 		return false;
 	}
 	

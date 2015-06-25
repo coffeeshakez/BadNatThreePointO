@@ -14,6 +14,8 @@ public class Message implements Serializable {
 	private String message, EmailSender, EmailReceiver;
 	private String type;
 	private ArrayList<User> friends;
+	private ArrayList<Group> groups;
+	private Group group; //Find a better name for this one 
 	
 	public static final String GET_USER = "GET_USER";
 	public static final String LOGIN = "LOGIN";
@@ -61,5 +63,21 @@ public class Message implements Serializable {
 	
 	public ArrayList<User> getFriends(){
 		return this.friends;
+	}
+	
+	public ArrayList<Group> getGroups(){
+		return this.groups;
+	}
+	
+	public void setGroups(ArrayList<Group> groups){
+		this.groups = groups;
+	}
+	
+	public Group getGroup(){
+		return this.group;
+	}
+	
+	public void setGroup(Group g){
+		this.group = g;
 	}
 }

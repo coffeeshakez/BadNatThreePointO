@@ -9,6 +9,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 import javafx.collections.ObservableList;
+import model.Group;
 import model.Message;
 import model.User;
 
@@ -86,7 +87,7 @@ public class ClientHandler extends Thread{
 		case "LOGIN":{
 			
 			System.out.println("switch login. username: " + m.getSender() + " password: " + m.getMessage());
-			
+
 			if(logIn(m.getSender(), m.getMessage())){
 				System.out.println("username is valid!! Hurray");
 				this.Email = m.getSender();
@@ -113,7 +114,18 @@ public class ClientHandler extends Thread{
 			break;
 		}
 		
-		case Message.NEW_GROUP:
+		case Message.NEW_GROUP:{
+			break;
+		}
+		
+		case Message.GROUP_MESSAGE:{
+			
+			ArrayList<User> users = m.getGroup().getUsers();
+			
+			server.broadcastMessageToGroup(m);
+			
+			break;
+		}
 			
 
 		default:
@@ -149,9 +161,11 @@ public class ClientHandler extends Thread{
 	public void sendInitialData(){
 		
 		ArrayList<User> friends = sql.getFriends(this.Email);
+		ArrayList<Group> groupChats = sql.getGroups(this.Email);
 		
 		Message m = new Message("SERVER" ,this.Email, "initialdata", "INITIAL_DATA" );
-		
+		m.setGroups(groupChats);
+ 		
 		if(friends != null || friends.size() > 0){
 			m.setFriends(friends);
 		}

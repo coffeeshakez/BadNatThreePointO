@@ -1,0 +1,29 @@
+package model;
+
+import java.util.ArrayList;
+
+public class Group {
+	
+	private int ID;
+	private String groupName;
+	private ArrayList<User> users;
+	
+	
+	public Group(int ID, String groupName){
+		this.ID = ID;
+		this.groupName = groupName;
+	}
+	
+	
+	public int getID(){
+		return this.ID;
+	}
+	
+	public String getGroupName(){
+		return this.groupName;
+	}
+	
+	public ArrayList<User> getUsers(){
+		return this.users;
+	}
+}

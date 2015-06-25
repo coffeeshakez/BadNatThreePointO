@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import model.Group;
 import model.User;
 
 import com.mysql.jdbc.Connection;
@@ -34,6 +35,10 @@ public class SqlHandler {
 	private final String userID = "UserID";
 	private final String email = "Email";
 	private final String Username = "Username";
+	
+	//columns in chatGroup
+	private final String chatGroupID = "ChatGroupID";
+	private final String chatGroupName = "ChatGroupName";
 
 	
 	public SqlHandler(){
@@ -163,8 +168,8 @@ public class SqlHandler {
 		}
 	}
 	
-	public String getUserIdFromUsername(String Email){
-		String userID = null;
+	public int getUserIdFromUsername(String Email){
+		int userID = 0;
 
 		connect();
 
@@ -173,7 +178,7 @@ public class SqlHandler {
 			ResultSet rs = statement.executeQuery("SELECT UserID FROM users WHERE Email = " + "'" + Email + "'");
 
 			rs.next();
-			userID = rs.getString("UserID");
+			userID = rs.getInt("UserID");
 
 		} catch (SQLException e) {
 			System.out.println("failed to get user id from username");
@@ -191,18 +196,18 @@ public class SqlHandler {
 		
 		connect();
 		
-		String u1 = getUserIdFromUsername(username);
-		String u2 = getUserIdFromUsername(username2);
+		int u1 = getUserIdFromUsername(username);
+		int u2 = getUserIdFromUsername(username2);
 		
 		try{
 			java.sql.PreparedStatement add = connection.prepareStatement("INSERT INTO friendRelations(UID1, UID2) VALUES (?,?)");
-			add.setString(1, u1);
-			add.setString(2, u2);
+			add.setInt(1, u1);
+			add.setInt(2, u2);
 			add.executeUpdate();
 			
 			java.sql.PreparedStatement add2 = connection.prepareStatement("INSERT INTO friendRelations(UID1, UID2) VALUES (?,?)");
-			add.setString(1, u2);
-			add.setString(2, u1);
+			add.setInt(1, u2);
+			add.setInt(2, u1);
 			add2.executeUpdate();
 			
 			System.out.println("sucsessfully created friendship");
@@ -219,7 +224,7 @@ public class SqlHandler {
 	
 	public ArrayList<User> getFriends(String username){
 		
-		String userid = getUserIdFromUsername(username);
+		int userid = getUserIdFromUsername(username);
 		ArrayList<User> friends = new ArrayList<User>();
 		
 		connect();
@@ -282,12 +287,16 @@ public class SqlHandler {
 				user = new User(rs.getString(this.Username), rs.getString(this.email));
 			}
 			
+			rs.close();
+			
+			
 		} catch (SQLException e) {
 			System.out.println("failed to get user");
 			e.printStackTrace();
 		}
 		
 		finally{
+			
 			closeConnection();
 		}
 		
@@ -296,9 +305,83 @@ public class SqlHandler {
 	
 	public boolean createGroup(String groupName, ArrayList<User> users){
 		
-		connec
+		connect();
+		int key = 0;
 		
+		try {
+			
+			java.sql.PreparedStatement add = null;
+			add = connection.prepareStatement("INSERT INTO chatGroup(ChatGroupName) VALUES (?)", add.RETURN_GENERATED_KEYS);
+			
+			add.setString(2, groupName);
+			key = add.executeUpdate();
+			
+			if(key != 0 && key > 0){
+				
+				for(User u : users){
+					
+					add = connection.prepareStatement("INSERT INTO chatGroup_users (UID, GID) VALUES(?, ?)", add.RETURN_GENERATED_KEYS);
+					add.setInt(1, key);
+					add.setInt(2, getUserIdFromUsername(u.getEmail()));
+					add.executeUpdate();
+				}
+			}
+			
+		} catch (SQLException e) {
+			System.out.println("failed to createGroup");
+			e.printStackTrace();
+		}
+		finally{
+			closeConnection();
+		}
 		
 		return false;
+	}
+	
+	public ArrayList<Group> getGroups(String Email){
+		ArrayList<Group> groups = new ArrayList<Group>();
+		
+		int userID = getUserIdFromUsername(Email);
+		
+		connect();
+		
+		try {
+			statement = connection.createStatement();
+			ResultSet rs = statement.executeQuery("SELECT ChatGroupID, ChatGroupName FROM "
+					+ "chatGroup INNER JOIN chatGroup_users ON UID = " + "'" + userID +"'" + "AND ChatGroupID = GID");
+			
+			while(rs.next()){
+				
+				int groupID = rs.getInt("ChatGroupID");
+				String groupName = rs.getString("ChatGroupName");
+				
+				Group g = new Group(groupID, groupName);
+				
+				groups.add(g);
+			}
+			
+			for(Group gr : groups){
+				
+						rs = statement.executeQuery("SELECT UserID, Username, Email FROM users "
+						+ "INNER JOIN chatGroup_users ON UID = UserID"
+						+ " WHERE GID = " + "'" + gr.getID() + "'");
+				
+				
+				
+				while (rs.next()){
+					gr.addUser(new User(rs.getString("UserName"), rs.getString("Email")));
+				}
+			}
+			
+		} catch (SQLException e) {
+			System.out.println("could not get groups");
+			e.printStackTrace();
+		}
+		
+		finally{
+			closeConnection();
+		}
+		
+		return groups;
 	}
 }
